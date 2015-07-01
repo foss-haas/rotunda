@@ -62,7 +62,7 @@ export class Router {
 
     return next();
 
-    function traverse(route, i = 0: number, params = []: Array<string>) {
+    function traverse(route, i = 0: number, params = []) {
       if (i === tokens.length) {
         if (!route['$']) return;
         route['$'].forEach(r => matches.push({route: r, params}));
@@ -78,6 +78,8 @@ export class Router {
       if (err) return Promise.reject(err);
       if (!matches.length) return Promise.reject(404);
 
+      let promisedParams = {};
+      let resolvedParams = {};
       let {
         params: paramValues,
         route: {
@@ -86,13 +88,22 @@ export class Router {
         }
       } = matches.shift();
 
-      let promises = {};
-      let values = {};
+      let paramPromises = paramValues.map((value, i) => {
+        const name = paramNames[i];
+        let promise = promisedParam(value, name)
+        .then(value => {
+          resolvedParams[name] = value;
+        });
+        promisedParams[name] = promise;
+        return promise;
+      });
 
-      paramValues = paramValues.map((value, i) => {
-        let name = paramNames[i];
+      return Promise.all(paramPromises)
+      .then(() => resolveRoute(resolvedParams))
+      .then(null, err => (!err || err.ignore) ? next() : next(err));
+
+      function promisedParam(value, name) {
         if (!paramDefs.has(name)) return Promise.resolve(value);
-
         let {
           resolve: resolveParam,
           schema
@@ -105,19 +116,8 @@ export class Router {
         }
 
         return Promise.resolve(value)
-        .then(v => resolveParam ? resolveParam(v, promises) : v);
-      });
-
-      return Promise.all(paramValues)
-      .then(values => {
-        let params = {};
-        values.forEach((value, i) => {
-          let name = paramNames[i];
-          params[name] = value;
-        });
-        return resolveRoute(values);
-      })
-      .then(null, err => (!err || err.ignore) ? next() : next(err));
+        .then(v => resolveParam ? resolveParam(v, promisedParams) : v);
+      }
     }
   }
 }

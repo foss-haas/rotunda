@@ -6,8 +6,11 @@
   },
   "rules": {
     "curly": [2, "multi-line"],
+    "dot-notation": [2, {"allowPattern": "[^_a-z0-9]+"}],
     "global-strict": 0,
+    "no-shadow": 0,
     "no-underscore-dangle": 0,
+    "no-use-before-define": [2, "nofunc"],
     "quotes": [1, "single"],
     "strict": [2, "global"]
   }
