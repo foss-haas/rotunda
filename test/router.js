@@ -5,9 +5,9 @@ require('es6-shim');
 import {Router} from '../src/router';
 import expect from 'expect.js';
 
-type doneFn = (err: ?Error) => void;
-declare function it(msg: string, doFn: ?(done: doneFn) => void): void;
-declare function describe(msg: string, doFn: ?(done: doneFn) => void): void;
+type DoneFn = (err: ?Error) => void;
+declare function it(msg: string, doFn: ?(done: DoneFn) => void): void;
+declare function describe(msg: string, doFn: ?(done: DoneFn) => void): void;
 
 describe('Router.resolve', () => {
   describe('routes', () => {

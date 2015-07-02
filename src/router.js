@@ -114,7 +114,7 @@ export class Router {
 
       function promisedParam(value: any, name: string): Promise {
         if (!paramDefs.has(name)) return Promise.resolve(value);
-        var param = paramDefs.get(name);
+        var param: Param = paramDefs.get(name);
         if (param.schema) {
           var result = param.schema.validate(value);
           if (result.error) return Promise.reject(result.error);
