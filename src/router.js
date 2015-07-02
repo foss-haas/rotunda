@@ -6,7 +6,24 @@ type ParamFn = (value: any, params: ?{[name: string]: Promise}) => (Promise | an
 type Schema = {validate: (value: any) => {value: any, error: ?Error}};
 type Param = {resolve?: ParamFn, schema?: Schema};
 type Route = {name?: string, resolve: RouteFn, paramNames: Array<string>, path: Array<string>};
-type RouteNode = {[token: string]: RouteNode, $: Array<Route>};
+
+class RouteNode extends Map<string, RouteNode> {
+  terminal: Array<Route>;
+  _dynamic: ?RouteNode;
+  constructor() {
+    super();
+    this.terminal = [];
+    this._dynamic = null;
+  }
+  dynamic(): RouteNode {
+    var node = this._dynamic || new RouteNode();
+    if (!this._dynamic) this._dynamic = node;
+    return node;
+  }
+  hasDynamic(): boolean {
+    return Boolean(this._dynamic);
+  }
+}
 
 export class Router {
   _caseInsensitive: boolean;
@@ -17,7 +34,7 @@ export class Router {
     this._caseInsensitive = caseInsensitive;
     this._params = new Map();
     this._named = new Map();
-    this._routes = {$: []};
+    this._routes = new RouteNode();
   }
   param(name: string, resolve: ?(ParamFn | Schema), schema: ?Schema): Router {
     if (resolve) {
@@ -30,20 +47,21 @@ export class Router {
     return this;
   }
   route(path: string, resolve: RouteFn, name?: string): Router {
-    var tokens = path.split('/').filter(Boolean);
-    var routes = this._routes;
+    var tokens: Array<string> = path.split('/').filter(Boolean);
+    var node: RouteNode = this._routes;
     var paramNames: Array<string> = [];
     var route: Route = {name, resolve, paramNames, path: tokens};
     tokens.forEach(token => {
       if (this._caseInsensitive) token = token.toLowerCase();
       if (token.charAt(0) === ':') {
         paramNames.push(token.slice(1));
-        token = ':';
-      } else token = `=${token}`;
-      if (!routes[token]) routes[token] = {$: []};
-      routes = routes[token];
+        node = node.dynamic();
+      } else {
+        if (!node.has(token)) node.set(token, new RouteNode());
+        node = node.get(token);
+      }
     });
-    routes.$.push(route);
+    node.terminal.push(route);
     if (name) this._named.set(name, route);
     return this;
   }
@@ -67,14 +85,14 @@ export class Router {
 
     function traverse(route: RouteNode, i: number = 0, params: Array<string> = []) {
       if (i === tokens.length) {
-        if (!route.$) return;
-        route.$.forEach(r => matches.push({route: r, params}));
+        if (!route.terminal) return;
+        route.terminal.forEach(r => matches.push({route: r, params}));
         return;
       }
       var token = tokens[i];
       if (caseInsensitive) token = token.toLowerCase();
-      if (route[`=${token}`]) traverse(route[`=${token}`], i + 1, params);
-      if (route[':']) traverse(route[':'], i + 1, params.concat(token));
+      if (route.has(token)) traverse(route.get(token), i + 1, params);
+      if (route.hasDynamic()) traverse(route.dynamic(), i + 1, params.concat(token));
     }
 
     function next(err) {
