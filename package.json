@@ -18,8 +18,8 @@
   "scripts": {
     "dist": "npm run lint && npm run test && npm run babel",
     "babel": "babel -d lib src",
-    "watch": "watch 'npm run dist' src",
+    "watch": "watch 'npm run dist' src test",
     "test": "mocha --compilers js:babel/register -R spec",
-    "lint": "eslint src && (command -v flow > /dev/null && flow ; true)"
+    "lint": "eslint src && bin/flow.sh"
   }
 }
