@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Rotunda by foss-haas</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Rotunda</h1>
+        <h2>Modern promise-based isomorphic routing</h2>
+        <a href="https://github.com/foss-haas/rotunda" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <p><img src="rotunda.png" alt="Rotunda"></p>
+
+<p><strong>Rotunda</strong> is a modern promise-based isomorphic routing library for Node.js and the browser.</p>
+
+<p><a href="http://foss-haas.mit-license.org"><img src="https://img.shields.io/npm/l/rotunda.svg" alt="license - MIT"></a> <a href="https://david-dm.org/foss-haas/rotunda"><img src="https://img.shields.io/david/foss-haas/rotunda.svg" alt="Dependencies"></a></p>
+
+<p><a href="https://www.npmjs.com/package/rotunda"><img src="https://nodei.co/npm/rotunda.png?compact=true" alt="NPM status"></a></p>
+
+<p><a href="https://travis-ci.org/foss-haas/rotunda"><img src="https://img.shields.io/travis/foss-haas/rotunda.svg" alt="Build status"></a> <a href="https://coveralls.io/r/foss-haas/rotunda?branch=master"><img src="https://img.shields.io/coveralls/foss-haas/rotunda.svg" alt="Coverage status"></a></p>
+
+<h1>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h1>
+
+<p><strong>Note:</strong> Rotunda uses language features that were introduced in ES2015 (ES6). The code has been converted to ES5 syntax using <a href="http://babeljs.io">Babel</a> but expects certain globals like <code>Promise</code> and <code>Map</code> that may not be available in older JavaScript environments. If you plan to use Rotunda in older browsers or older versions of Node.js you should use <a href="https://www.npmjs.com/package/es6-shim">es6-shim</a> (or provide your own implementation of these globals). For IE8 support you will also need <a href="https://github.com/es-shims/es5-shim">es5-shim</a>.</p>
+
+<h2>
+<a id="with-npm" class="anchor" href="#with-npm" aria-hidden="true"><span class="octicon octicon-link"></span></a>With NPM</h2>
+
+<div class="highlight highlight-sh"><pre>npm install rotunda</pre></div>
+
+<h2>
+<a id="from-source" class="anchor" href="#from-source" aria-hidden="true"><span class="octicon octicon-link"></span></a>From source</h2>
+
+<div class="highlight highlight-sh"><pre>git clone https://github.com/foss-haas/rotunda.git
+<span class="pl-c1">cd</span> rotunda
+npm install
+npm run dist</pre></div>
+
+<p>In order to run the automated type checks for development, you will need to have <a href="http://flowtype.org">flow</a> installed and available from the project folder. If flow is not available, the type checks will be skipped temporarily.</p>
+
+<h1>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span class="octicon octicon-link"></span></a>API</h1>
+
+<h2>
+<a id="new-router" class="anchor" href="#new-router" aria-hidden="true"><span class="octicon octicon-link"></span></a>new Router</h2>
+
+<p>Creates a <code>Router</code> instance.</p>
+
+<p><strong>Arguments</strong></p>
+
+<ul>
+<li>
+<p>caseInsensitive: <em>boolean</em> (default: <code>false</code>)</p>
+
+<p>If enabled, routes and paths will be converted to lower case, emulating the behaviour of case-insensitive file systems. Parameter names are not affected and are always case-sensitive.</p>
+</li>
+</ul>
+
+<p><strong>Examples</strong></p>
+
+<div class="highlight highlight-js"><pre><span class="pl-k">import</span> {Router} <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>rotunda<span class="pl-pds">'</span></span>;
+<span class="pl-k">let</span> router <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Router</span>();
+<span class="pl-k">let</span> caselessRouter <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Router</span>(<span class="pl-c1">true</span>);
+
+<span class="pl-c">// ES5 equivalent:</span>
+
+<span class="pl-k">var</span> Router <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>rotunda<span class="pl-pds">'</span></span>).Router;
+<span class="pl-k">var</span> router <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Router</span>();
+<span class="pl-k">var</span> caselessRouter <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Router</span>(<span class="pl-c1">true</span>);</pre></div>
+
+<h2>
+<a id="routerparam" class="anchor" href="#routerparam" aria-hidden="true"><span class="octicon octicon-link"></span></a>Router#param</h2>
+
+<p>Defines a named parameter on the router. Returns the router instance itself to allow chaining.</p>
+
+<p><strong>Arguments</strong></p>
+
+<ul>
+<li>
+<p><strong>name</strong>: <em>string</em></p>
+
+<p>The parameter will be invoked by every route that matches its name. Parameter names are case-sensitive. If a route uses a parameter that was not defined, the value will be passed through to the route handler directly.</p>
+</li>
+<li>
+<p><strong>resolve</strong>: <em>function</em> (optional)</p>
+
+<p>Optionally the parameter can be assigned a resolve function that should return a promise for the parameter's value. The function will be passed the current value of the parameter as well as an object mapping the names of other parameters for the route to promises for their values.</p>
+
+<p>If the promise is rejected with a reason, the routing will be aborted and fail with the given reason. If the promise is rejected <em>without</em> a reason, the route will fail to match and the routing will continue with the next match or fail with an error indicating that the route could not be resolved if there are no other matches.</p>
+
+<p>Otherwise the result the result of the promise will be passed to any parameters that depend on it. Once all parameters have resolved successfully, their values will be passed to the route handler matching the route.</p>
+
+<p><strong>Note that it is possible to create a dead-lock if two parameters on the same route depend on each other's values to resolve.</strong></p>
+</li>
+<li>
+<p><strong>schema</strong>: <em>any</em> (optional)</p>
+
+<p>Optionally the parameter can be assigned a schema to validate any matching values against. The schema can be a <a href="https://github.com/hapijs/joi">joi schema</a> or any value that has a method named <code>validate</code>. The method must accept a string value as input and return an object with two properties: <code>value</code> and <code>error</code>.</p>
+
+<p>A truthy <code>error</code> indicates that the schema validation has failed and will result in the router skipping the matched route and continuing with the next match or failing with an error indicating the route could not be resolved.</p>
+
+<p>If the value of <code>error</code> is non-truthy, the value of the <code>value</code> property will be used as the value of the parameter for the resolve function or the current route handler if the parameter has no resolve function.</p>
+</li>
+</ul>
+
+<p>If you only want to assign a schema to the parameter, you can pass the schema as the second argument.</p>
+
+<p>If neither <em>resolve</em> nor <em>schema</em> are specified, the method has no effect.</p>
+
+<p>If both are defined, the value will first be validated against the schema and then passed to the resolve function.</p>
+
+<p><strong>Examples</strong></p>
+
+<div class="highlight highlight-js"><pre><span class="pl-c">// Let's use joi for our schemas</span>
+<span class="pl-k">import</span> joi <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>joi<span class="pl-pds">'</span></span>;
+
+<span class="pl-c">// Define a parameter that resolves immediately</span>
+router.param(<span class="pl-s"><span class="pl-pds">'</span>primeNumber<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-smi">value</span>) {
+  <span class="pl-c">// Joi has validated the value and converted it to a number</span>
+  <span class="pl-c">// So we can just pass it to other code that expects a number</span>
+  <span class="pl-k">if</span> (isPrimeNumber(value)) <span class="pl-k">return</span> value;
+  <span class="pl-c">// Not a prime, probably the wrong route</span>
+  <span class="pl-c">// Reject without reason to try the next route instead</span>
+  <span class="pl-k">return</span> Promise.reject();
+}, joi.number().integer());
+
+<span class="pl-c">// Define a parameter that resolves asynchronously</span>
+router.param(<span class="pl-s"><span class="pl-pds">'</span>articleId<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-smi">value</span>) {
+  <span class="pl-c">// Let's make some kind of remote API call over AJAX with the validated ID</span>
+  <span class="pl-k">return</span> ajax.get(<span class="pl-s"><span class="pl-pds">`</span>/api/articles/<span class="pl-s1"><span class="pl-pse">${</span>value<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>);
+}, joi.number().integer());
+
+<span class="pl-c">// Define a parameter that depends on another parameter</span>
+router.param(<span class="pl-s"><span class="pl-pds">'</span>userArticleId<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-smi">value</span>, <span class="pl-smi">params</span>) {
+  <span class="pl-k">return</span> params.userId
+  .then(<span class="pl-k">function</span> (<span class="pl-smi">validUserId</span>) {
+    <span class="pl-c">// We have waited for the "userId" parameter to be resolved</span>
+    <span class="pl-c">// Now let's do something that returns a promise</span>
+    <span class="pl-k">return</span> ajax.get(<span class="pl-s"><span class="pl-pds">`</span>/api/users/<span class="pl-s1"><span class="pl-pse">${</span>validUserId<span class="pl-pse">}</span></span>/articles/<span class="pl-s1"><span class="pl-pse">${</span>value<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>);
+  });
+}, joi.number().integer());
+
+<span class="pl-c">// Define a parameter with only a resolve function</span>
+router.param(<span class="pl-s"><span class="pl-pds">'</span>magic<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-smi">value</span>) {
+  <span class="pl-k">return</span> ajax.post(<span class="pl-s"><span class="pl-pds">'</span>/api/magic<span class="pl-pds">'</span></span>, {magic<span class="pl-k">:</span> value})
+  .then(
+    <span class="pl-k">function</span> (<span class="pl-smi">magic</span>) {
+      <span class="pl-k">return</span> magic <span class="pl-k">*</span> <span class="pl-c1">2</span>;
+    },
+    <span class="pl-k">function</span> (<span class="pl-smi">apiError</span>) {
+      <span class="pl-c">// Reject with a reason to abort the routing</span>
+      <span class="pl-k">return</span> Promise.reject({
+        error<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Out of magic!<span class="pl-pds">'</span></span>,
+        reason<span class="pl-k">:</span> apiError
+      });
+    }
+  )
+});
+
+<span class="pl-c">// Define a parameter with only a schema</span>
+router.param(<span class="pl-s"><span class="pl-pds">'</span>someNumber<span class="pl-pds">'</span></span>, joi.number());
+
+<span class="pl-c">// This has no effect</span>
+router.param(<span class="pl-s"><span class="pl-pds">'</span>nothing<span class="pl-pds">'</span></span>);</pre></div>
+
+<h2>
+<a id="routerroute" class="anchor" href="#routerroute" aria-hidden="true"><span class="octicon octicon-link"></span></a>Router#route</h2>
+
+<p>Defines a route on the router. Returns the router instance itself to allow chaining.</p>
+
+<p><strong>Arguments</strong></p>
+
+<ul>
+<li>
+<p><strong>route</strong>: <em>string</em></p>
+
+<p>The absolute path of the route to define. Leading, trailing and redundant slashes will be ignored. Parameters are segments starting with a colon followed by the parameter name, e.g. <code>/users/:userId/profile</code> contains the parameter "userId".</p>
+
+<p>If any of the parameters have been defined on the router, their values will be validated and resolved before being passed to the handler. If any parameter fails to validate or resolve, the route handler will be skipped.</p>
+
+<p>Note that for any segment of the route any static matches will be preferred to parameters, e.g. for the path <code>/pages/manual</code> the route <code>/pages/:pageName</code> (static, parameter) will be preferred over the route <code>/:category/manual</code> (parameter, static) which in turn will be preferred over <code>/:category/:section</code> (parameter, parameter).</p>
+</li>
+<li>
+<p><strong>handler</strong>: <em>function</em></p>
+
+<p>A function that returns a promise for the result of the given route. If the route contains any parameters, the handler will be passed an object mapping the names of the parameters to their resolved values.</p>
+
+<p>If the promise returned by the handler is rejected with an error, the routing will abort and fail with that error. If the promise is rejected without an error, the next route handler matching the route will be invoked. If no other handlers match the route, the routing will fail with an error indicating that the route could not be resolved.</p>
+
+<p>If the handler returns any other value than a promise, it will be wrapped in a resolved promise automatically.</p>
+</li>
+<li>
+<p><strong>name</strong>: <em>string</em> (optional)</p>
+
+<p>The route can optionally be registered using a given name. Only named routes can be reversed (see below).</p>
+</li>
+</ul>
+
+<p><strong>Examples</strong></p>
+
+<div class="highlight highlight-js"><pre>router.route(<span class="pl-s"><span class="pl-pds">'</span>/users/:userId<span class="pl-pds">'</span></span>, <span class="pl-k">function</span> (<span class="pl-smi">params</span>) {
+  <span class="pl-k">return</span> Promise.resolve(
+    <span class="pl-s"><span class="pl-pds">'</span>This is the user page for the User #<span class="pl-pds">'</span></span> <span class="pl-k">+</span> params.userId <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span>!<span class="pl-pds">'</span></span>
+  );
+});</pre></div>
+
+<h2>
+<a id="routerreverse" class="anchor" href="#routerreverse" aria-hidden="true"><span class="octicon octicon-link"></span></a>Router#reverse</h2>
+
+<p><em>TODO</em></p>
+
+<h2>
+<a id="routerresolve" class="anchor" href="#routerresolve" aria-hidden="true"><span class="octicon octicon-link"></span></a>Router#resolve</h2>
+
+<p><em>TODO</em></p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>The MIT/Expat license. For more information, see <a href="http://foss-haas.mit-license.org/">http://foss-haas.mit-license.org/</a> or the accompanying <a href="https://github.com/foss-haas/rotunda/blob/master/LICENSE">LICENSE</a> file.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/foss-haas/rotunda/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/foss-haas/rotunda/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/foss-haas/rotunda"></a> is maintained by <a href="https://github.com/foss-haas">foss-haas</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
