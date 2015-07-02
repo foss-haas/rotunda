@@ -1,8 +1,13 @@
+/* @flow */
 /*global describe, it */
 'use strict';
-import 'es6-shim';
+require('es6-shim');
 import {Router} from '../src/router';
 import expect from 'expect.js';
+
+type doneFn = (err: ?Error) => void;
+declare function it(msg: string, doFn: ?(done: doneFn) => void): void;
+declare function describe(msg: string, doFn: ?(done: doneFn) => void): void;
 
 describe('Router.resolve', () => {
   describe('routes', () => {
@@ -18,7 +23,7 @@ describe('Router.resolve', () => {
           done();
         }
       )
-      .then(null, done);
+      .then(undefined, done);
     });
     it('fail over when rejected without reasons', done => {
       new Router()
@@ -29,7 +34,7 @@ describe('Router.resolve', () => {
         expect(value).to.be('done');
         done();
       })
-      .then(null, done);
+      .then(undefined, done);
     });
   });
   describe('params', () => {
@@ -46,7 +51,7 @@ describe('Router.resolve', () => {
           done();
         }
       )
-      .then(null, done);;
+      .then(undefined, done);;
     });
     it('fail over when rejected without reasons', done => {
       new Router()
@@ -58,7 +63,7 @@ describe('Router.resolve', () => {
         expect(value).to.be('done');
         done();
       })
-      .then(null, done);
+      .then(undefined, done);
     });
   });
   it('stops resolving when it has a match', done => {
@@ -70,10 +75,10 @@ describe('Router.resolve', () => {
       expect(value).to.be('done');
       done();
     })
-    .then(null, done);
+    .then(undefined, done);
   })
   it('prefers static routes over dynamic routes', done => {
-    let routes = [];
+    var routes: Array<number> = [];
     new Router()
     .route('/:a/:b/:c', () => {
       routes.push(5);
@@ -111,6 +116,6 @@ describe('Router.resolve', () => {
         done();
       }
     )
-    .then(null, done);
+    .then(undefined, done);
   });
 });
