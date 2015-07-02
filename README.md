@@ -1,4 +1,4 @@
-![Rotunda](rotunda.png)
+![Rotunda](http://foss-haas.github.io/rotunda/rotunda-dark.png)
 
 **Rotunda** is a modern promise-based isomorphic routing library for Node.js and the browser inspired by the [express framework](http://expressjs.com) and [Django](https://www.djangoproject.com).
 
