@@ -4,9 +4,9 @@ type NextFn = (err: ?Error) => Promise;
 type RouteFn = (params: {[key: string]: any}) => (Promise | any);
 type ParamFn = (value: any, params: ?{[name: string]: Promise}) => (Promise | any);
 type Schema = {validate: (value: any) => {value: any, error: ?Error}};
-type Param = {resolve: ?ParamFn, schema: ?Schema};
-type Route = {name: ?string, resolve: RouteFn, paramNames: Array<string>, path: Array<string>};
-type RouteNode = {[token: string]: (RouteNode | Array<Route>)};
+type Param = {resolve?: ParamFn, schema?: Schema};
+type Route = {name?: string, resolve: RouteFn, paramNames: Array<string>, path: Array<string>};
+type RouteNode = {[token: string]: RouteNode, $: Array<Route>};
 
 export class Router {
   _caseInsensitive: boolean;
@@ -17,7 +17,7 @@ export class Router {
     this._caseInsensitive = caseInsensitive;
     this._params = new Map();
     this._named = new Map();
-    this._routes = {};
+    this._routes = {$: []};
   }
   param(name: string, resolve: ?(ParamFn | Schema), schema: ?Schema): Router {
     if (resolve) {
@@ -29,7 +29,7 @@ export class Router {
     }
     return this;
   }
-  route(path: string, resolve: RouteFn, name: ?string): Router {
+  route(path: string, resolve: RouteFn, name?: string): Router {
     var tokens = path.split('/').filter(Boolean);
     var routes = this._routes;
     var paramNames: Array<string> = [];
@@ -40,11 +40,10 @@ export class Router {
         paramNames.push(token.slice(1));
         token = ':';
       } else token = `=${token}`;
-      if (!routes[token]) routes[token] = {};
+      if (!routes[token]) routes[token] = {$: []};
       routes = routes[token];
     });
-    if (!routes['$']) routes['$'] = [];
-    routes['$'].push(route);
+    routes.$.push(route);
     if (name) this._named.set(name, route);
     return this;
   }
@@ -68,8 +67,8 @@ export class Router {
 
     function traverse(route: RouteNode, i: number = 0, params: Array<string> = []) {
       if (i === tokens.length) {
-        if (!route['$']) return;
-        route['$'].forEach(r => matches.push({route: r, params}));
+        if (!route.$) return;
+        route.$.forEach(r => matches.push({route: r, params}));
         return;
       }
       var token = tokens[i];
