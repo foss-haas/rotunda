@@ -1,6 +1,6 @@
 ![Rotunda](rotunda.png)
 
-**Rotunda** is a modern promise-based isomorphic routing library for Node.js and the browser.
+**Rotunda** is a modern promise-based isomorphic routing library for Node.js and the browser inspired by the [express framework](http://expressjs.com) and [Django](https://www.djangoproject.com).
 
 [![license - MIT](https://img.shields.io/npm/l/rotunda.svg)](http://foss-haas.mit-license.org) [![Dependencies](https://img.shields.io/david/foss-haas/rotunda.svg)](https://david-dm.org/foss-haas/rotunda)
 
