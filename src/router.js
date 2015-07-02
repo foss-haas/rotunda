@@ -99,9 +99,9 @@ export class Router {
       var resolvedParams: {[t: string]: any} = {};
       var {paramValues, route} = matches.shift();
 
-      function paramValueToPromise(value: any, i: number): Promise {
+      function promiseParam(value: any, i: number): Promise {
           var name = route.paramNames[i];
-          var promise = promisedParam(value, name)
+          var promise = resolveParam(value, name)
           .then(value => {
             resolvedParams[name] = value;
           });
@@ -109,19 +109,19 @@ export class Router {
           return promise;
       }
 
-      function promisedParam(value: any, name: string): Promise {
+      function resolveParam(value: any, name: string): Promise {
         if (!paramDefs.has(name)) return Promise.resolve(value);
         var param: Param = paramDefs.get(name);
         if (param.schema) {
           var result = param.schema.validate(value);
-          if (result.error) return Promise.reject(result.error);
+          if (result.error) return Promise.reject();
           value = result.value;
         }
         return Promise.resolve(value)
         .then(v => param.resolve ? param.resolve(v, promisedParams) : v);
       }
 
-      return Promise.all(paramValues.map(paramValueToPromise))
+      return Promise.all(paramValues.map(promiseParam))
       .then(() => route.resolve(resolvedParams))
       .then(undefined, err => (!err || err.ignore) ? next() : next(err));
     }
