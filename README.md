@@ -61,7 +61,7 @@ Defines a named parameter on the router. Returns the router instance itself to a
 
   The parameter will be invoked by every route that matches its name. Parameter names are case-sensitive. If a route uses a parameter that was not defined, the value will be passed through to the route handler directly.
 
-* resolve: *function* (optional)
+* **resolve**: *function* (optional)
 
   Optionally the parameter can be assigned a resolve function that should return a promise for the parameter's value. The function will be passed the current value of the parameter as well as an object mapping the names of other parameters for the route to promises for their values.
 
@@ -71,7 +71,7 @@ Defines a named parameter on the router. Returns the router instance itself to a
 
   **Note that it is possible to create a dead-lock if two parameters on the same route depend on each other's values to resolve.**
 
-* schema: *any* (optional)
+* **schema**: *any* (optional)
 
   Optionally the parameter can be assigned a schema to validate any matching values against. The schema can be a [joi schema](https://github.com/hapijs/joi) or any value that has a method named `validate`. The method must accept a string value as input and return an object with two properties: `value` and `error`.
 
@@ -164,7 +164,7 @@ Defines a route on the router. Returns the router instance itself to allow chain
 
   If the handler returns any other value than a promise, it will be wrapped in a resolved promise automatically.
 
-* name: *string* (optional)
+* **name**: *string* (optional)
 
   The route can optionally be registered using a given name. Only named routes can be reversed (see below).
 
