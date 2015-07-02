@@ -1,22 +1,25 @@
 /* @flow */
 'use strict';
-type nextFn = (err: ?Error) => Promise;
-type routeFn = (params: Object, next: nextFn) => (Promise | any);
-type paramFn = (value: any, params?: Object) => (Promise | any);
-type joiSchema = {validate: (value: any) => {value: any, error: ?Error}};
+type NextFn = (err: ?Error) => Promise;
+type RouteFn = (params: {[key: string]: any}) => (Promise | any);
+type ParamFn = (value: any, params: ?{[name: string]: Promise}) => (Promise | any);
+type Schema = {validate: (value: any) => {value: any, error: ?Error}};
+type Param = {resolve: ?ParamFn, schema: ?Schema};
+type Route = {name: ?string, resolve: RouteFn, paramNames: Array<string>, path: Array<string>};
+type RouteNode = {[token: string]: (RouteNode | Array<Route>)};
 
 export class Router {
   _caseInsensitive: boolean;
-  _params: Map;
-  _named: Map;
-  _routes: Object;
+  _params: Map<string,Param>;
+  _named: Map<string,Route>;
+  _routes: RouteNode;
   constructor(caseInsensitive: boolean = false) {
     this._caseInsensitive = caseInsensitive;
     this._params = new Map();
     this._named = new Map();
     this._routes = {};
   }
-  param(name: string, resolve: ?(paramFn | joiSchema), schema: ?joiSchema): Router {
+  param(name: string, resolve: ?(ParamFn | Schema), schema: ?Schema): Router {
     if (resolve) {
       if (!schema && resolve.validate) {
         schema = resolve;
@@ -26,15 +29,15 @@ export class Router {
     }
     return this;
   }
-  route(path: string, resolve: routeFn, name: ?string): Router {
+  route(path: string, resolve: RouteFn, name: ?string): Router {
     var tokens = path.split('/').filter(Boolean);
     var routes = this._routes;
-    var params = [];
-    var route = {resolve, name, params, path: tokens};
+    var paramNames: Array<string> = [];
+    var route: Route = {name, resolve, paramNames, path: tokens};
     tokens.forEach(token => {
       if (this._caseInsensitive) token = token.toLowerCase();
       if (token.charAt(0) === ':') {
-        params.push(token.slice(1));
+        paramNames.push(token.slice(1));
         token = ':';
       } else token = `=${token}`;
       if (!routes[token]) routes[token] = {};
@@ -45,7 +48,7 @@ export class Router {
     if (name) this._named.set(name, route);
     return this;
   }
-  reverse(name: string, params: ?Object): string {
+  reverse(name: string, params: ?{[name: string]: any}): string {
     var route = this._named.get(name);
     if (!route) throw new Error(`Unknown route: ${name}`);
     return '/' + route.path.map(token => {
@@ -61,9 +64,9 @@ export class Router {
     var caseInsensitive = this._caseInsensitive;
     var paramDefs = this._params;
     var tokens = path.split('/').filter(Boolean);
-    var matches = [];
+    var matches: Array<{route: Route, params: Array<string>}> = [];
 
-    function traverse(route, i: number = 0, params: Array<string> = []) {
+    function traverse(route: RouteNode, i: number = 0, params: Array<string> = []) {
       if (i === tokens.length) {
         if (!route['$']) return;
         route['$'].forEach(r => matches.push({route: r, params}));
@@ -85,7 +88,7 @@ export class Router {
         params: paramValues,
         route: {
           resolve: resolveRoute,
-          params: paramNames
+          paramNames
         }
       } = matches.shift();
 
