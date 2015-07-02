@@ -1,6 +1,5 @@
 /* @flow */
 'use strict';
-type NextFn = (err: ?Error) => Promise;
 type RouteFn = (params: {[key: string]: any}) => (Promise | any);
 type ParamFn = (value: any, params: ?{[name: string]: Promise}) => (Promise | any);
 type Schema = {validate: (value: any) => {value: any, error: ?Error}};
@@ -27,8 +26,8 @@ class RouteNode extends Map<string, RouteNode> {
 
 export class Router {
   _caseInsensitive: boolean;
-  _params: Map<string,Param>;
-  _byName: Map<string,Route>;
+  _params: Map<string, Param>;
+  _byName: Map<string, Route>;
   _root: RouteNode;
   constructor(caseInsensitive: boolean = false) {
     this._caseInsensitive = caseInsensitive;
@@ -37,13 +36,11 @@ export class Router {
     this._root = new RouteNode();
   }
   param(name: string, resolve: any, schema: any): Router {
-    if (resolve) {
-      if (resolve.validate) {
-        schema = resolve;
-        resolve = undefined;
-      }
-      this._params.set(name, {resolve, schema})
-    }
+    this._params.set(name, (
+      resolve && resolve.validate
+      ? {schema: resolve}
+      : {schema, resolve}
+    ));
     return this;
   }
   route(path: string, resolve: RouteFn, name?: string): Router {
@@ -95,7 +92,7 @@ export class Router {
       if (route.hasDynamic()) traverse(route.dynamic(), i + 1, paramValues.concat(token));
     }
 
-    function next(err) {
+    function next(err: any): Promise {
       if (err) return Promise.reject(err);
       if (!matches.length) return Promise.reject(404);
       var promisedParams: {[t: string]: Promise} = {};
