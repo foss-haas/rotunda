@@ -6,13 +6,14 @@ type Schema = {validate: (value: any) => {value: any, error: ?Error}};
 type Param = {resolve?: ParamFn, schema?: Schema};
 type Route = {name?: string, resolve: RouteFn, paramNames: Array<string>, path: Array<string>};
 
-class RouteNode extends Map<string, RouteNode> {
+class RouteNode {
   terminal: Array<Route>;
   _dynamic: ?RouteNode;
+  _map: Map<string, RouteNode>;
   constructor() {
-    super();
     this.terminal = [];
     this._dynamic = null;
+    this._map = new Map();
   }
   dynamic(): RouteNode {
     var node: RouteNode = this._dynamic || new RouteNode();
@@ -21,6 +22,15 @@ class RouteNode extends Map<string, RouteNode> {
   }
   hasDynamic(): boolean {
     return Boolean(this._dynamic);
+  }
+  get(key: string): RouteNode {
+    return this._map.get(key);
+  }
+  has(key: string): boolean {
+    return this._map.has(key);
+  }
+  set(key: string, node: RouteNode): void {
+    this._map.set(key, node);
   }
 }
 
