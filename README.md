@@ -10,6 +10,8 @@
 
 # Install
 
+**Note:** Rotunda uses language features that were introduced in ES2015 (ES6). The code has been converted to ES5 syntax using [Babel](http://babeljs.io) but expects certain globals like `Promise` and `Map` that may not be available in older JavaScript environments. If you plan to use Rotunda in older browsers or older versions of Node.js you should use [es6-shim](https://www.npmjs.com/package/es6-shim) (or provide your own implementation of these globals). For IE8 support you will also need [es5-shim](https://github.com/es-shims/es5-shim).
+
 ## With NPM
 
 ```sh
@@ -24,6 +26,8 @@ cd rotunda
 npm install
 npm run dist
 ```
+
+In order to run the automated type checks for development, you will need to have [flow](http://flowtype.org) installed and available from the project folder. If flow is not available, the type checks will be skipped temporarily.
 
 # API
 
