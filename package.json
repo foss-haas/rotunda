@@ -5,6 +5,12 @@
   "main": "lib/router.js",
   "author": "Alan Plum <me@pluma.io>",
   "license": "MIT",
+  "files": [
+    "lib/",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/foss-haas/rotunda.git"
