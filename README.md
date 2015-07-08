@@ -44,7 +44,7 @@ Creates a `Router` instance.
 **Examples**
 
 ```js
-import {Router} from 'rotunda';
+import Router from 'rotunda';
 let router = new Router();
 let caselessRouter = new Router(true);
 

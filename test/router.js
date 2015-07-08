@@ -2,7 +2,7 @@
 /*global describe, it */
 'use strict';
 require('es6-shim');
-import {Router} from '../src/router';
+import Router from '../src/router';
 import expect from 'expect.js';
 
 type DoneFn = (err: ?Error) => void;

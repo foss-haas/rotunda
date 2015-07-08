@@ -34,7 +34,7 @@ class RouteNode {
   }
 }
 
-export class Router {
+export default class Router {
   _caseInsensitive: boolean;
   _params: Map<string, Param>;
   _byName: Map<string, Route>;
