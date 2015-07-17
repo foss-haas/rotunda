@@ -1,6 +1,7 @@
 sudo: false
 language: node_js
 node_js:
+  - "unstable"
   - "stable"
   - "0.10"
 after_script:
