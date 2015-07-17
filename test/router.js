@@ -1,7 +1,7 @@
 /* @flow */
 /*global describe, it */
 'use strict';
-require('es6-shim');
+require('core-js/shim');
 import Router from '../src/router';
 import expect from 'expect.js';
 
