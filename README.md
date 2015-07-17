@@ -176,9 +176,20 @@ Defines a route on the router. Returns the router instance itself to allow chain
 
 ```js
 router.route('/users/:userId', function (params) {
-  return Promise.resolve(
-    'This is the user page for the User #' + params.userId + '!'
-  );
+  return Promise.resolve(`This is the user page for the User #${params.userId}!`);
+});
+
+// Non-promise return values will be wrapped automatically
+router.route('/articles/:articleId', function (params) {
+  return `This is the article page for Article #${params.userId}!`;
+});
+
+// Parameters will have been resolved before the route handler is invoked
+router.param('comment', function (value) {
+  return ajax.get(`/api/comments/${value}`);
+}, joi.number().integer().required());
+router.route('/articles/:articleId/comments/:comment', function (params) {
+  return Promise.resolve(`Comment: ${params.comment.title} by ${params.comment.author}`);
 });
 ```
 
@@ -196,13 +207,87 @@ Returns a path that would resolve to the route name and parameters.
 
   An object mapping parameter names to parameter values. Any parameters not used by the route will be ignored. If any parameters are missing, an error will be thrown.
 
-  Parameter values should be strings or values with string representations that are supported by the parameter definitions
+  Parameter values should be strings or values with string representations that are supported by the parameter definitions.
 
-**Examples**.
+**Examples**
+
+```js
+router.param('articleId', joi.number().integer());
+router.route('/articles/:articleId', function () {/*...*/}, 'article_detail');
+
+// You can always pass in parameter values as strings
+router.reverse('article_detail', {articleId: '23'});
+// -> "/articles/23"
+
+// You can also pass in non-string values
+router.reverse('article_detail', {articleId: 42});
+// -> "/articles/42"
+
+// But be wary of passing in arbitrary objects
+router.reverse('article_detail', {articleId: {some: 'object'}});
+// -> "/articles/[object Object]"
+
+// You always have to pass in all parameters
+router.reverse('article_detail', {articleId: '23'});
+// -> Error: Failed to reverse article_detail. Missing param: articleId
+
+// Extra parameters will be ignored
+router.reverse('article_detail', {articleId: '23', size: 'xxl'});
+// -> "/articles/23"
+```
 
 ## Router#resolve
 
-*TODO*
+Attempts to resolve a path. Returns a promise that is rejected if the route does not successfully match any routes or resolved with the matching route handler's result. 
+
+**Arguments**
+
+* **path**: *string*
+
+  The absolute path to resolve.
+
+**Examples**
+
+```js
+router.param('articleId', joi.number().integer());
+router.route('/articles/:articleId', function (params) {
+  return Promise.resolve(`This is the article page for Article #${params.userId}!`);
+});
+
+router.resolve('/articles/23').then(
+  function (result) {console.log(result);},
+  function (err) {console.error(err);}
+);
+// -> This is the article page for Article #23
+
+// Paths that don't match anything are rejected
+router.resolve('/articles/pants').then(
+  function (result) {console.log(result);},
+  function (err) {console.error(err);}
+);
+// -> Error: 404
+
+// Paths that match a route that is rejected with a reason are rejected
+router.route('/bad-route', function () {
+  return Promise.reject(new Error('Out of order'));
+});
+router.resolve('/bad-route').then(
+  function (result) {console.log(result);},
+  function (err) {console.error(err);}
+);
+// -> Error: Out of order
+
+// Parameters that are rejected with a reason also result in rejection
+router.param('bad-param', function () {
+  return Promise.reject(new Error('Server error'));
+});
+router.route('/some-route/bad-param', function () {/*never reached*/});
+router.resolve('/some-route/bad-param').then(
+  function (result) {console.log(result);},
+  function (err) {console.error(err);}
+);
+// -> Error: Server error
+```
 
 # License
 
