@@ -119,3 +119,35 @@ describe('Router.resolve', () => {
     .then(undefined, done);
   });
 });
+
+describe('Router.reverse', () => {
+  it('returns a path for a named route without parameters', () => {
+    var router = new Router().route('/x', function () {}, 'example');
+    expect(router.reverse('example')).to.equal('/x');
+  });
+  it('returns a path for a named route with parameters', () => {
+    var router = new Router().route('/x/:y', function () {}, 'example');
+    expect(router.reverse('example', {y: 'hi'})).to.equal('/x/hi');
+  });
+  it('converts parameter values to strings', () => {
+    var obj = {toString: () => 'banana'}
+    var router = new Router().route('/:x/:y', function () {}, 'example');
+    expect(router.reverse('example', {x: 23, y: obj})).to.equal('/23/banana');
+  });
+  it('fails if the name is not known', () => {
+    var router = new Router();
+    expect(() => router.reverse('example')).to.throwException();
+  });
+  it('fails if any parameters are missing', () => {
+    var router = new Router().route('/x/:y', function () {}, 'example');
+    expect(() => router.reverse('example')).to.throwException();
+  });
+  it('ignores parameters for routes without parameters', () => {
+    var router = new Router().route('/x', function () {}, 'example');
+    expect(router.reverse('example', {a: 'b'})).to.equal('/x');
+  });
+  it('ignores superfluous parameters for routes with parameters', () => {
+    var router = new Router().route('/x/:y', function () {}, 'example');
+    expect(router.reverse('example', {a: 'b', y: 'hi'})).to.equal('/x/hi');
+  });
+});

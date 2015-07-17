@@ -238,7 +238,7 @@ router.reverse('article_detail', {articleId: '23', size: 'xxl'});
 
 ## Router#resolve
 
-Attempts to resolve a path. Returns a promise that is rejected if the route does not successfully match any routes or resolved with the matching route handler's result. 
+Attempts to resolve a path. Returns a promise that is rejected if the path does not successfully match any routes or resolved with the matching route handler's result. 
 
 **Arguments**
 
