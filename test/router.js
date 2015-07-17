@@ -51,7 +51,7 @@ describe('Router.resolve', () => {
           done();
         }
       )
-      .then(undefined, done);;
+      .then(undefined, done);
     });
     it('fail over when rejected without reasons', done => {
       new Router()
