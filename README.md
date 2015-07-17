@@ -184,7 +184,21 @@ router.route('/users/:userId', function (params) {
 
 ## Router#reverse
 
-*TODO*
+Returns a path that would resolve to the route name and parameters.
+
+**Arguments**
+
+* **name**: *string*
+
+  The name of a named route registered with this router. If no route with the given name has been registered with the router, an error will be thrown.
+
+* **parameters**: *Object* (optional)
+
+  An object mapping parameter names to parameter values. Any parameters not used by the route will be ignored. If any parameters are missing, an error will be thrown.
+
+  Parameter values should be strings or values with string representations that are supported by the parameter definitions
+
+**Examples**.
 
 ## Router#resolve
 

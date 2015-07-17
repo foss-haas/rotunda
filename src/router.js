@@ -79,7 +79,7 @@ export default class Router {
       if (token.charAt(0) === ':') {
         token = token.slice(1);
         if (params && params[token]) return params[token];
-        throw new Error(`Failed to resolve route ${name}. Missing param: ${token}`);
+        throw new Error(`Failed to reverse route ${name}. Missing param: ${token}`);
       }
       return token;
     }).join('/');
