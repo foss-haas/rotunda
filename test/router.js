@@ -53,7 +53,7 @@ describe('Router.route', () => {
     var router = new Router().route('/x', function () {});
     expect(router._byName.size).to.be(0);
   });
-  it('registers a route handler by name if a is provided', () => {
+  it('registers a route handler by name if a name is provided', () => {
     var handler = function () {};
     var router = new Router().route('/x', handler, 'lol');
     expect(router._byName.size).to.be(1);
