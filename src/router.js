@@ -46,11 +46,10 @@ export default class Router {
     this._root = new RouteNode();
   }
   param(name: string, resolve: any, schema: any): Router {
-    this._params.set(name, (
-      resolve && resolve.validate
-      ? {schema: resolve}
-      : {schema, resolve}
-    ));
+    if (resolve) {
+      if (schema) this._params.set(name, {resolve, schema});
+      else this._params.set(name, resolve.validate ? {schema: resolve} : {resolve});
+    } else if (schema) this._params.set(name, {schema});
     return this;
   }
   route(path: string, resolve: RouteFn, name?: string): Router {

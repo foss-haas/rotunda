@@ -9,6 +9,58 @@ type DoneFn = (err: ?Error) => void;
 declare function it(msg: string, doFn: ?(done: DoneFn) => void): void;
 declare function describe(msg: string, doFn: ?(done: DoneFn) => void): void;
 
+describe('Router.param', () => {
+  it('is chainable', () => {
+    var router = new Router();
+    expect(router.param('x', function () {})).to.be(router);
+  });
+  it('does nothing if no resolve function or schema is passed', () => {
+    expect(new Router().param('x')._params.has('x')).to.be(false);
+  });
+  it('registers only the resolve function if it is only passed a resolve function', () => {
+    var resolveFn = function () {};
+    var param = new Router().param('x', resolveFn)._params.get('x');
+    expect(param).to.have.property('resolve', resolveFn);
+    expect(param).not.to.have.property('schema');
+  });
+  it('registers only the schema if it is only passed a schema', () => {
+    var schema = function () {};
+    var param = new Router().param('x', undefined, schema)._params.get('x');
+    expect(param).not.to.have.property('resolve');
+    expect(param).to.have.property('schema', schema);
+  });
+  it('registers only the schema if it is passed a schema instead of a resolve function', () => {
+    var schema = {validate: function () {}};
+    var param = new Router().param('x', schema)._params.get('x');
+    expect(param).not.to.have.property('resolve');
+    expect(param).to.have.property('schema', schema);
+  });
+  it('registers both a resolve function and a schema if passed both', () => {
+    var resolveFn = function () {};
+    var schema = {validate: function () {}};
+    var param = new Router().param('x', resolveFn, schema)._params.get('x');
+    expect(param).to.have.property('resolve', resolveFn);
+    expect(param).to.have.property('schema', schema);
+  });
+});
+
+describe('Router.route', () => {
+  it('is chainable', () => {
+    var router = new Router();
+    expect(router.route('/x', function () {})).to.be(router);
+  });
+  it('does not register a route handler by name if no name is provided', () => {
+    var router = new Router().route('/x', function () {});
+    expect(router._byName.size).to.be(0);
+  });
+  it('registers a route handler by name if a is provided', () => {
+    var handler = function () {};
+    var router = new Router().route('/x', handler, 'lol');
+    expect(router._byName.size).to.be(1);
+    expect(router._byName.get('lol')).to.have.property('resolve', handler);
+  });
+});
+
 describe('Router.resolve', () => {
   describe('routes', () => {
     it('fail hard when rejected with reasons', done => {
