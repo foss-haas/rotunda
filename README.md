@@ -10,7 +10,7 @@
 
 # Install
 
-**Note:** Rotunda uses language features that were introduced in ES2015 (ES6). The code has been converted to ES5 syntax using [Babel](http://babeljs.io) but expects certain globals like `Promise` and `Map` that may not be available in older JavaScript environments. If you plan to use Rotunda in older browsers or older versions of Node.js you should use [es6-shim](https://www.npmjs.com/package/es6-shim) (or provide your own implementation of these globals). For IE8 support you will also need [es5-shim](https://github.com/es-shims/es5-shim).
+**Note:** Rotunda uses language features that were introduced in ES2015 (ES6). The code has been converted to ES5 syntax using [Babel](http://babeljs.io) but expects certain globals like `Promise` and `Map` that may not be available in older JavaScript environments. If you plan to use Rotunda in older browsers or older versions of Node.js you should use a polyfill/shim library like [core-js](https://www.npmjs.com/package/core-js).
 
 ## With NPM
 
@@ -238,7 +238,7 @@ router.reverse('article_detail', {articleId: '23', size: 'xxl'});
 
 ## Router#resolve
 
-Attempts to resolve a path. Returns a promise that is rejected if the path does not successfully match any routes or resolved with the matching route handler's result. 
+Attempts to resolve a path. Returns a promise that is rejected if the path does not successfully match any routes or resolved with the matching route handler's result.
 
 **Arguments**
 
