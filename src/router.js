@@ -83,7 +83,7 @@ export default class Router {
       return token;
     }).join('/');
   }
-  resolve(path: string): Promise {
+  resolve(path: string, context: any): Promise {
     var caseInsensitive: boolean = this._caseInsensitive;
     var paramDefs = this._params;
     var tokens: Array<string> = path.split('/').filter(Boolean);
@@ -105,7 +105,7 @@ export default class Router {
       if (err) return Promise.reject(err);
       if (!matches.length) return Promise.reject(404);
       var promisedParams: {[t: string]: Promise} = {};
-      var resolvedParams: {[t: string]: any} = {};
+      var resolvedParams: {[t: string]: any} = {$raw: {}};
       var {paramValues, route} = matches.shift();
 
       function promiseParam(value: any, i: number): Promise {
@@ -119,6 +119,7 @@ export default class Router {
       }
 
       function resolveParam(value: any, name: string): Promise {
+        resolvedParams.$raw[name] = value;
         if (!paramDefs.has(name)) return Promise.resolve(value);
         var param: Param = paramDefs.get(name);
         if (param.schema) {
@@ -127,11 +128,11 @@ export default class Router {
           value = result.value;
         }
         return Promise.resolve(value)
-        .then(v => param.resolve ? param.resolve(v, promisedParams) : v);
+        .then(v => param.resolve ? param.resolve(v, promisedParams, context) : v);
       }
 
       return Promise.all(paramValues.map(promiseParam))
-      .then(() => route.resolve(resolvedParams))
+      .then(() => route.resolve(resolvedParams, context))
       .then(undefined, err => (!err || err.ignore) ? next() : next(err));
     }
 

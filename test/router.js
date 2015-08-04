@@ -30,14 +30,14 @@ describe('Router.param', () => {
     expect(param).to.have.property('schema', schema);
   });
   it('registers only the schema if it is passed a schema instead of a resolve function', () => {
-    var schema = {validate: function () {}};
+    var schema = {validate() {}};
     var param = new Router().param('x', schema)._params.get('x');
     expect(param).not.to.have.property('resolve');
     expect(param).to.have.property('schema', schema);
   });
   it('registers both a resolve function and a schema if passed both', () => {
     var resolveFn = function () {};
-    var schema = {validate: function () {}};
+    var schema = {validate() {}};
     var param = new Router().param('x', resolveFn, schema)._params.get('x');
     expect(param).to.have.property('resolve', resolveFn);
     expect(param).to.have.property('schema', schema);
@@ -169,6 +169,29 @@ describe('Router.resolve', () => {
       }
     )
     .then(undefined, done);
+  });
+  it('passes context to params', done => {
+    var ctx = {hello: 'world'};
+    new Router()
+    .param('x', (value, params, context) => expect(context).to.be(ctx))
+    .route('/:x', () => null)
+    .resolve('/hello', ctx)
+    .then(() => done(), done);
+  });
+  it('passes context to routes', done => {
+    var ctx = {hello: 'world'};
+    new Router()
+    .route('/hello', (params, context) => expect(context).to.be(ctx))
+    .resolve('/hello', ctx)
+    .then(() => done(), done);
+  });
+  it('passes raw params to routes', done => {
+    var ctx = {hello: 'world'};
+    new Router()
+    .param('x', () => 23)
+    .route('/:x', params => expect(params.$raw).to.have.property('x', 'hello'))
+    .resolve('/hello', ctx)
+    .then(() => done(), done);
   });
 });
 

@@ -189,7 +189,13 @@ router.param('comment', function (value) {
   return ajax.get(`/api/comments/${value}`);
 }, joi.number().integer().required());
 router.route('/articles/:articleId/comments/:comment', function (params) {
-  return Promise.resolve(`Comment: ${params.comment.title} by ${params.comment.author}`);
+  return `Comment: ${params.comment.title} by ${params.comment.author}`;
+});
+
+// The raw values of parameters are available, too
+router.route('/articles/:articleId/comments/:comment', function (params) {
+  var raw = params.$raw;
+  return `URL: /articles/${raw.articleId}/comments/${raw.comment}`;
 });
 ```
 
@@ -246,12 +252,16 @@ Attempts to resolve a path. Returns a promise that is rejected if the path does 
 
   The absolute path to resolve.
 
+* **context**: *any* (optional)
+
+  An additional argument that will be passed to the matching parameters' resolve functions and the route handler.
+
 **Examples**
 
 ```js
 router.param('articleId', joi.number().integer());
 router.route('/articles/:articleId', function (params) {
-  return Promise.resolve(`This is the article page for Article #${params.userId}!`);
+  return `This is the article page for Article #${params.userId}!`;
 });
 
 router.resolve('/articles/23').then(
@@ -287,6 +297,18 @@ router.resolve('/some-route/bad-param').then(
   function (err) {console.error(err);}
 );
 // -> Error: Server error
+
+// Contexts can be used to pass run-time dependencies to a route
+router.param('article', function (value, params, context) {
+  return context.api.getArticle(value);
+});
+router.route('/articles/:article', function (params, context) {
+  return `This is the article page for article #${params.article.title}`;
+});
+router.resolve('/articles/23', {api: require('./my-api')}).then(
+  function (result) {console.log(result);},
+  function (err) {console.error(err);}
+);
 ```
 
 # License
