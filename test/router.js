@@ -170,6 +170,18 @@ describe('Router.resolve', () => {
     )
     .then(undefined, done);
   });
+  it('handles dependent params', done => {
+    new Router()
+    .param('x', (value, params) => params.y.then(y => Number(value) * y))
+    .param('y', value => Number(value) * 3)
+    .route('/:x/:y', params => params)
+    .resolve('/2/5')
+    .then(({x, y}) => {
+      expect(x).to.equal(30);
+      expect(y).to.equal(15);
+      done();
+    }, done);
+  })
   it('passes context to params', done => {
     var ctx = {hello: 'world'};
     new Router()

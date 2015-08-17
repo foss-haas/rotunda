@@ -113,6 +113,7 @@ export default class Router {
           var promise = resolveParam(value, name)
           .then(value => {
             resolvedParams[name] = value;
+            return value;
           });
           promisedParams[name] = promise;
           return promise;
